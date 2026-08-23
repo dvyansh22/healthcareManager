@@ -21,5 +21,6 @@ COPY --from=publish /app/publish .
 # Expose port (Render automatically assigns PORT env var)
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
+ENV DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
 
 ENTRYPOINT ["dotnet", "ApiCore.dll"]
