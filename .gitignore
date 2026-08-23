@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.next/
+bin/
+obj/
+__pycache__/
+venv/
+*.pyc
+*.pyo
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+out/
+*.user
+*.suo
+
+# Logs
+*.log
