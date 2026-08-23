@@ -27,7 +27,15 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
     else
     {
-        opt.UseNpgsql(builder.Configuration.GetConnectionString("Default"))
+        var connStr = builder.Configuration.GetConnectionString("Default");
+        if (!string.IsNullOrEmpty(connStr) && connStr.StartsWith("postgres://"))
+        {
+            var uri = new Uri(connStr);
+            var userInfo = uri.UserInfo.Split(':');
+            connStr = $"Host={uri.Host};Port={(uri.Port > 0 ? uri.Port : 5432)};Database={uri.LocalPath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]}";
+        }
+        
+        opt.UseNpgsql(connStr)
            .ConfigureWarnings(w =>
                w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
     }
