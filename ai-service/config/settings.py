@@ -81,18 +81,35 @@ WSGI_APPLICATION = "config.wsgi.application"
 # --------------------------------------------------------------------------- #
 # Database — shared Postgres, notify schema for writes, core schema read-only
 # --------------------------------------------------------------------------- #
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DB_NAME"),
-        "USER": env("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST"),
-        "PORT": env("DB_PORT", "5432"),
-        # notify first (owned by Django), core second (read-only access)
-        "OPTIONS": {"options": "-c search_path=notify,core"},
+import urllib.parse
+db_url_str = os.environ.get("DATABASE_URL")
+
+if db_url_str:
+    urllib.parse.uses_netloc.append("postgres")
+    url = urllib.parse.urlparse(db_url_str)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": url.path[1:],
+            "USER": url.username,
+            "PASSWORD": url.password,
+            "HOST": url.hostname,
+            "PORT": url.port or 5432,
+            "OPTIONS": {"options": "-c search_path=notify,core"},
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("DB_NAME"),
+            "USER": env("DB_USER"),
+            "PASSWORD": env("DB_PASSWORD"),
+            "HOST": env("DB_HOST"),
+            "PORT": env("DB_PORT", "5432"),
+            "OPTIONS": {"options": "-c search_path=notify,core"},
+        }
+    }
 
 # --------------------------------------------------------------------------- #
 # Email backend
