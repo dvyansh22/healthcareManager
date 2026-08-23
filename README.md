@@ -1,5 +1,19 @@
 # Healthcare Appointment & Follow-up Manager
 
+**Live Application URL**: [https://healthcare-manager-eosin.vercel.app](https://healthcare-manager-eosin.vercel.app)
+
+## How This Project Was Made
+
+This project was built using a robust, polyglot microservice architecture designed to handle complex healthcare scheduling and AI-driven patient follow-ups.
+
+*   **Frontend (Web)**: Built with **Next.js 14**, **React**, and **Tailwind CSS**. It uses a highly responsive, modern dark glassmorphism UI theme. The frontend communicates with the backend via secure JWT authentication and provides dedicated portals for Patients, Doctors, and Administrators.
+*   **Core API Backend (.NET 10)**: The core transactional engine was built using **C#** and **ASP.NET Core**. It uses **Entity Framework Core** with a **PostgreSQL** database. It handles all critical state management such as preventing double-bookings (using database-level concurrency controls), user provisioning, and role-based access control.
+*   **AI & Notification Service (Django / Python)**: A separate **Django** microservice was built to handle asynchronous, I/O heavy tasks. It communicates securely with the .NET backend via shared secret tokens. This service integrates with the **Google Gemini API** to generate automated pre-visit and post-visit medical summaries based on patient symptoms and doctor notes. It also handles sending email notifications and medication reminders using an SMTP relay.
+*   **Integrations**: The system natively integrates with the **Google Calendar API** using OAuth 2.0. When appointments are booked or cancelled, the system automatically synchronizes these events to a clinic-managed Google Calendar.
+*   **Deployment**: The database is hosted on a managed PostgreSQL provider, the Django and .NET services are containerized and deployed as Render Web Services, and the Next.js frontend is hosted on Vercel.
+
+---
+
 A full-stack polyglot microservice application with three user roles (Patient, Doctor, Admin), AI-generated medical summaries via Google Gemini, automated email notifications, medication reminders, and Google Calendar sync.
 
 ---
