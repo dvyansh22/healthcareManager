@@ -6,7 +6,7 @@ using ApiCore.Services;
 
 namespace ApiCore.Controllers;
 
-public record RegisterRequest(string Email, string Password, string Name, string? Phone, string? Role);
+public record RegisterRequest(string Email, string Password, string Name, string? Phone, string? Role, string? Specialization);
 public record LoginRequest(string Email, string Password);
 
 [ApiController]
@@ -53,7 +53,7 @@ public class AuthController : ControllerBase
             _db.DoctorProfiles.Add(new DoctorProfile
             {
                 UserId = user.Id,
-                Specialization = "General Practice", // Default value
+                Specialization = string.IsNullOrWhiteSpace(req.Specialization) ? "General Practice" : req.Specialization,
                 SlotDurationMinutes = 20
             });
         }

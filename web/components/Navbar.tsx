@@ -67,16 +67,28 @@ export default function Navbar() {
           )}
 
           {role === "Doctor" && (
-            <Link
-              href="/doctor/schedule"
-              className={`px-4 py-1.5 rounded-lg font-medium transition ${
-                pathname.startsWith("/doctor")
-                  ? "bg-amber-400 text-stone-950 shadow-xs font-semibold"
-                  : "text-stone-600 hover:text-stone-900"
-              }`}
-            >
-              Physician Schedule
-            </Link>
+            <>
+              <Link
+                href="/doctor/schedule"
+                className={`px-4 py-1.5 rounded-lg font-medium transition ${
+                  pathname === "/doctor/schedule"
+                    ? "bg-amber-400 text-stone-950 shadow-xs font-semibold"
+                    : "text-stone-600 hover:text-stone-900"
+                }`}
+              >
+                Physician Schedule
+              </Link>
+              <Link
+                href="/doctor/profile"
+                className={`px-4 py-1.5 rounded-lg font-medium transition ${
+                  pathname === "/doctor/profile"
+                    ? "bg-amber-400 text-stone-950 shadow-xs font-semibold"
+                    : "text-stone-600 hover:text-stone-900"
+                }`}
+              >
+                My Profile
+              </Link>
+            </>
           )}
 
           {role === "Admin" && (

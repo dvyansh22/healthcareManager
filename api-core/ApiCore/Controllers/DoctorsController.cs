@@ -115,5 +115,42 @@ public class DoctorsController : ControllerBase
         return Ok(new { date, slots = freeSlots });
     }
 
+    public record UpdateProfileRequest(string? Specialization, string? Bio, int? SlotDurationMinutes, string? WorkingHoursJson);
+
+    // GET /api/doctors/me
+    [HttpGet("me")]
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Doctor")]
+    public async Task<IActionResult> GetMyProfile()
+    {
+        var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userIdStr == null) return Unauthorized();
+        var userId = Guid.Parse(userIdStr);
+        
+        var profile = await _db.DoctorProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+        if (profile == null) return NotFound(new { error = "Profile not found" });
+        return Ok(profile);
+    }
+
+    // PUT /api/doctors/me
+    [HttpPut("me")]
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Doctor")]
+    public async Task<IActionResult> UpdateMyProfile(UpdateProfileRequest req)
+    {
+        var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userIdStr == null) return Unauthorized();
+        var userId = Guid.Parse(userIdStr);
+        
+        var profile = await _db.DoctorProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+        if (profile == null) return NotFound(new { error = "Profile not found" });
+
+        if (req.Specialization != null) profile.Specialization = req.Specialization;
+        if (req.Bio != null) profile.Bio = req.Bio;
+        if (req.SlotDurationMinutes.HasValue) profile.SlotDurationMinutes = req.SlotDurationMinutes.Value;
+        if (req.WorkingHoursJson != null) profile.WorkingHoursJson = req.WorkingHoursJson;
+
+        await _db.SaveChangesAsync();
+        return Ok(profile);
+    }
+
     private record WorkingHoursEntry(string Start, string End);
 }

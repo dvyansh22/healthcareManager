@@ -115,6 +115,28 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {form.role === "Doctor" && (
+              <div className="animate-fade-in">
+                <label className="block text-xs font-bold text-stone-200 uppercase tracking-wider mb-1.5">
+                  Specialization
+                </label>
+                <select
+                  name="specialization"
+                  value={(form as any).specialization || "General Practice"}
+                  onChange={handleChange}
+                  className="w-full bg-black/40 border border-white/20 text-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 rounded-xl px-4 py-2.5 text-sm font-medium transition"
+                >
+                  <option value="General Practice">General Practice</option>
+                  <option value="Cardiology">Cardiology</option>
+                  <option value="Dermatology">Dermatology</option>
+                  <option value="Neurology">Neurology</option>
+                  <option value="Pediatrics">Pediatrics</option>
+                  <option value="Psychiatry">Psychiatry</option>
+                  <option value="Orthopedics">Orthopedics</option>
+                </select>
+              </div>
+            )}
+
             {error && (
               <div className="bg-rose-500/20 border border-rose-400/30 text-rose-200 text-xs px-3.5 py-2.5 rounded-lg font-semibold">
                 {error}
