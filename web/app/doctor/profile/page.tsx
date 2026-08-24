@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import Navbar from "@/components/Navbar";
 
 const DAYS = [
   { key: "mon", label: "Monday" },
@@ -103,127 +104,143 @@ export default function DoctorProfilePage() {
   }
 
   if (loading) {
-    return <div className="p-8 text-white">Loading profile...</div>;
+    return (
+      <div className="min-h-screen bg-[#fafaf9] text-stone-900 flex flex-col">
+        <Navbar />
+        <div className="flex justify-center py-20">
+          <span className="spinner scale-150 border-amber-400" />
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight drop-shadow-md">My Profile</h1>
-        <p className="text-stone-400 text-sm mt-1">Manage your public profile and working hours</p>
-      </div>
+    <div className="min-h-screen bg-[#fafaf9] text-stone-900 flex flex-col">
+      <Navbar />
 
-      {error && (
-        <div className="bg-rose-500/20 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-xl text-sm font-medium">
-          {error}
+      <main className="max-w-4xl w-full mx-auto px-6 py-10 flex-1">
+        <div className="mb-8 border-b border-stone-200 pb-6">
+          <h1 className="text-2xl font-bold tracking-tight text-stone-900">My Profile</h1>
+          <p className="text-stone-600 text-sm mt-1">Manage your public profile and working hours</p>
         </div>
-      )}
-      
-      {success && (
-        <div className="bg-emerald-500/20 border border-emerald-500/50 text-emerald-200 px-4 py-3 rounded-xl text-sm font-medium">
-          {success}
-        </div>
-      )}
 
-      <form onSubmit={handleSubmit} className="bg-stone-900/50 border border-white/10 rounded-2xl p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {error && (
+          <div className="mb-6 bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm font-medium">
+            {error}
+          </div>
+        )}
+        
+        {success && (
+          <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium">
+            {success}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="card-panel rounded-2xl p-6 sm:p-8 space-y-8 bg-white border border-stone-200 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Specialization</label>
+              <select
+                value={form.specialization}
+                onChange={e => setForm({ ...form, specialization: e.target.value })}
+                className="w-full bg-stone-50 border border-stone-200 text-stone-900 rounded-xl px-4 py-2.5 text-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition shadow-sm"
+              >
+                {SPECIALIZATIONS.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Slot Duration (Minutes)</label>
+              <select
+                value={form.slotDurationMinutes}
+                onChange={e => setForm({ ...form, slotDurationMinutes: parseInt(e.target.value) })}
+                className="w-full bg-stone-50 border border-stone-200 text-stone-900 rounded-xl px-4 py-2.5 text-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition shadow-sm"
+              >
+                <option value={15}>15 Minutes</option>
+                <option value={20}>20 Minutes</option>
+                <option value={30}>30 Minutes</option>
+                <option value={60}>60 Minutes</option>
+              </select>
+            </div>
+          </div>
+
           <div>
-            <label className="block text-xs font-bold text-stone-300 uppercase tracking-wider mb-2">Specialization</label>
-            <select
-              value={form.specialization}
-              onChange={e => setForm({ ...form, specialization: e.target.value })}
-              className="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-2.5 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-            >
-              {SPECIALIZATIONS.map(s => (
-                <option key={s} value={s}>{s}</option>
+            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Public Biography</label>
+            <textarea
+              value={form.bio}
+              onChange={e => setForm({ ...form, bio: e.target.value })}
+              rows={3}
+              className="w-full bg-stone-50 border border-stone-200 text-stone-900 rounded-xl px-4 py-3 text-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition shadow-sm placeholder:text-stone-400"
+              placeholder="Tell patients about your background and expertise..."
+            />
+          </div>
+
+          <div className="pt-6 border-t border-stone-100">
+            <h2 className="text-lg font-bold text-stone-900 mb-4">Weekly Availability</h2>
+            <div className="space-y-3">
+              {DAYS.map(d => (
+                <div key={d.key} className="flex items-center gap-4 bg-stone-50 p-4 rounded-xl border border-stone-200/60 shadow-xs transition hover:border-stone-300">
+                  <label className="flex items-center gap-3 w-32 cursor-pointer group">
+                    <div className="relative flex items-center justify-center">
+                      <input
+                        type="checkbox"
+                        checked={hours[d.key]?.active || false}
+                        onChange={e => setHours({
+                          ...hours,
+                          [d.key]: { ...hours[d.key], active: e.target.checked }
+                        })}
+                        className="peer appearance-none w-5 h-5 border-2 border-stone-300 rounded cursor-pointer checked:bg-amber-400 checked:border-amber-400 transition"
+                      />
+                      <svg className="absolute w-3.5 h-3.5 text-stone-950 opacity-0 peer-checked:opacity-100 pointer-events-none" viewBox="0 0 14 10" fill="none">
+                        <path d="M1 5L4.5 8.5L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-semibold text-stone-700 group-hover:text-stone-900 transition">{d.label}</span>
+                  </label>
+                  
+                  {hours[d.key]?.active ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="time"
+                        value={hours[d.key]?.start || "09:00"}
+                        onChange={e => setHours({
+                          ...hours,
+                          [d.key]: { ...hours[d.key], start: e.target.value }
+                        })}
+                        className="bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-sm text-stone-900 font-medium focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition shadow-sm"
+                      />
+                      <span className="text-stone-400 font-medium px-1">to</span>
+                      <input
+                        type="time"
+                        value={hours[d.key]?.end || "17:00"}
+                        onChange={e => setHours({
+                          ...hours,
+                          [d.key]: { ...hours[d.key], end: e.target.value }
+                        })}
+                        className="bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-sm text-stone-900 font-medium focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition shadow-sm"
+                      />
+                    </div>
+                  ) : (
+                    <span className="text-sm text-stone-400 italic font-medium">Not available</span>
+                  )}
+                </div>
               ))}
-            </select>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-stone-300 uppercase tracking-wider mb-2">Slot Duration (Minutes)</label>
-            <select
-              value={form.slotDurationMinutes}
-              onChange={e => setForm({ ...form, slotDurationMinutes: parseInt(e.target.value) })}
-              className="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-2.5 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+          <div className="pt-6 mt-4 flex justify-end">
+            <button
+              type="submit"
+              disabled={saving}
+              className="bg-stone-900 hover:bg-stone-800 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition flex items-center gap-2 shadow-md active:scale-[0.98]"
             >
-              <option value={15}>15 Minutes</option>
-              <option value={20}>20 Minutes</option>
-              <option value={30}>30 Minutes</option>
-              <option value={60}>60 Minutes</option>
-            </select>
+              {saving ? "Saving..." : "Save Profile & Availability"}
+            </button>
           </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-bold text-stone-300 uppercase tracking-wider mb-2">Public Biography</label>
-          <textarea
-            value={form.bio}
-            onChange={e => setForm({ ...form, bio: e.target.value })}
-            rows={3}
-            className="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-2.5 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-            placeholder="Tell patients about your background and expertise..."
-          />
-        </div>
-
-        <div className="pt-4 border-t border-white/10">
-          <h2 className="text-lg font-bold text-white mb-4">Weekly Availability</h2>
-          <div className="space-y-3">
-            {DAYS.map(d => (
-              <div key={d.key} className="flex items-center gap-4 bg-black/20 p-3 rounded-xl border border-white/5">
-                <label className="flex items-center gap-3 w-32 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={hours[d.key]?.active || false}
-                    onChange={e => setHours({
-                      ...hours,
-                      [d.key]: { ...hours[d.key], active: e.target.checked }
-                    })}
-                    className="accent-amber-400 w-4 h-4 rounded"
-                  />
-                  <span className="text-sm font-medium text-stone-200">{d.label}</span>
-                </label>
-                
-                {hours[d.key]?.active ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="time"
-                      value={hours[d.key]?.start || "09:00"}
-                      onChange={e => setHours({
-                        ...hours,
-                        [d.key]: { ...hours[d.key], start: e.target.value }
-                      })}
-                      className="bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-                    />
-                    <span className="text-stone-500">to</span>
-                    <input
-                      type="time"
-                      value={hours[d.key]?.end || "17:00"}
-                      onChange={e => setHours({
-                        ...hours,
-                        [d.key]: { ...hours[d.key], end: e.target.value }
-                      })}
-                      className="bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-                    />
-                  </div>
-                ) : (
-                  <span className="text-sm text-stone-500 italic">Not available</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="pt-4 flex justify-end">
-          <button
-            type="submit"
-            disabled={saving}
-            className="bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold py-2.5 px-6 rounded-xl text-sm transition flex items-center gap-2 shadow-lg"
-          >
-            {saving ? "Saving..." : "Save Profile & Availability"}
-          </button>
-        </div>
-      </form>
+        </form>
+      </main>
     </div>
   );
 }
