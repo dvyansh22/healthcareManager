@@ -30,10 +30,8 @@ def call_pre_visit(appointment_id: str, symptom_text: str) -> dict:
     }
 
     prompt = (
-        "You are a clinical intake assistant. Respond ONLY with valid JSON, no markdown.\n"
-        "Analyse these symptoms and return JSON with keys \"urgency\" (Low/Medium/High),\n"
-        "\"chief_complaint\" (string), and \"questions\" (array of exactly 3 strings —\n"
-        f"suggested questions for the doctor to ask). Symptoms: {symptom_text}"
+        "Respond ONLY with valid JSON, no markdown. Use keys: \"urgency\", \"chief_complaint\", and \"questions\" (array).\n"
+        f"Analyse these symptoms and return: urgency level (Low / Medium / High), chief complaint, and three suggested questions for the doctor. Symptoms: {symptom_text}"
     )
 
     log = LlmCallLog(
@@ -86,10 +84,8 @@ def call_post_visit(appointment_id: str, clinical_notes: str) -> dict:
     }
 
     prompt = (
-        "You are a patient communication assistant. Respond ONLY with valid JSON, no markdown.\n"
-        "Convert these clinical notes into JSON with keys \"summary_text\" (plain-language\n"
-        "paragraph), \"medication_schedule\" (array of {name, dosage, frequency, duration}),\n"
-        f"and \"follow_up_steps\" (array of strings). Notes: {clinical_notes}"
+        "Respond ONLY with valid JSON, no markdown. Use keys: \"summary_text\", \"medication_schedule\" (array of {name, dosage, frequency, duration}), and \"follow_up_steps\" (array).\n"
+        f"Convert these clinical notes into a patient-friendly summary with medication schedule and follow-up steps: {clinical_notes}"
     )
 
     log = LlmCallLog(
